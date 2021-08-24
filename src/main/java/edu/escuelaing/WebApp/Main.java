@@ -2,7 +2,9 @@ package edu.escuelaing.WebApp;
 
 import spark.Request;
 import spark.Response;
+import java.io.IOException;
 import static spark.Spark.*;
+import edu.escuelaing.WebApp.HttpConnectionExample;
 
 public class Main {
   public static void main(String[] args) {
@@ -10,6 +12,7 @@ public class Main {
     staticFiles.location("/public");
     get("/form", (req, res) -> formPage(req, res));
     get("/results", (req, res) -> resultPage(req, res));
+    get("/shares", (req, res) -> resultPage(req, res));
   }
 
   private static String formPage(Request req, Response res) {
@@ -31,8 +34,9 @@ public class Main {
     return pageContent;
   }
 
-  private static String resultPage(Request req, Response res) {
-    return req.queryParams("firstname") + " " + req.queryParams("lastname");
+  private static String resultPage(Request req, Response res) throws IOException {
+    HttpConnectionExample connection = new HttpConnectionExample();
+    return connection.getHtmlResponse(req.queryParams("id"));
   }
 
   private static int getPort() {
