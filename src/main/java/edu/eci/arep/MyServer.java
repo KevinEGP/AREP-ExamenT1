@@ -1,10 +1,9 @@
-package edu.escuelaing.WebApp.Reto1;
-
+package edu.eci.arep;
 
 import java.io.*;
 import java.net.*;
 
-public class MyServerSocket extends Thread {
+public class MyServer extends Thread {
 
     private ServerSocket serverSocket;
     private Socket clientSocket;
@@ -15,8 +14,16 @@ public class MyServerSocket extends Thread {
     BufferedReader r = new BufferedReader( new InputStreamReader( System.in ));
     
 
-    public void begin(int port) throws IOException {
+    static int getPort() {
+        if (System.getenv("PORT") != null) {
+            return Integer.parseInt(System.getenv("PORT"));
+        }
+        return 35000;
+    }
 
+    public void begin() throws IOException {
+
+        int port = getPort();
         serverSocket = new ServerSocket(port);
         clientSocket = serverSocket.accept();
 
@@ -52,12 +59,15 @@ public class MyServerSocket extends Thread {
     @Override
     public void run() {
 
-        MyServerSocket server = new MyServerSocket();
+        MyServer server = new MyServer();
         try {
-            server.begin(6666);
+            server.begin();
         } catch (IOException e) {
             e.printStackTrace();
         }
         
-    }
+    }    
 }
+
+
+// Tomado de https://www.baeldung.com/a-guide-to-java-sockets

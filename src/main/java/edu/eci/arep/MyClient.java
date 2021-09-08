@@ -1,4 +1,4 @@
-package edu.escuelaing.WebApp.Reto1;
+package edu.eci.arep;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,7 +7,10 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-public class ClientSocket {
+import javax.websocket.server.ServerEndpoint;
+
+@ServerEndpoint("/weather")
+public class MyClient {
 
     static BufferedReader r = new BufferedReader( new InputStreamReader( System.in ));
     private Socket clientSocket;
@@ -37,23 +40,38 @@ public class ClientSocket {
 
     public static void main(String[] args) throws IOException {
 
-        MyServerSocket server = new MyServerSocket();
+        //https://api.openweathermap.org/data/2.5/weather?q=London&APPID=8f7be5f45471c12644241ab5a22f7d32
+        MyServer server = new MyServer();
         server.start();
         
-        ClientSocket client = new ClientSocket();
-        client.startConnection("127.0.0.1", 6666);
-        System.out.print("URL: ");
+        MyClient client = new MyClient();
+        client.startConnection("127.0.0.1", 35000);
+        System.out.print("Input: ");
         String input = r.readLine();
+
+        if (!input.contains("http") && !"".equals(input)){
+            input = "https://api.openweathermap.org/data/2.5/weather?q="+ input + "&APPID=8f7be5f45471c12644241ab5a22f7d32";
+        }
+
         String response = client.sendMessage(input);
         
         while (!"".equals(input)) {
             
             System.out.println(response);
 
-            System.out.print("URL: ");
+            System.out.print("Input: ");
             r = new BufferedReader( new InputStreamReader( System.in ));
             input = r.readLine();
+            
+            if (!input.contains("http") && !"".equals(input)){
+                
+                input = "https://api.openweathermap.org/data/2.5/weather?q="+ input + "&APPID=8f7be5f45471c12644241ab5a22f7d32";
+            }
+
             response = client.sendMessage(input);
         }
     }
 }
+
+
+// Tomado de https://www.baeldung.com/a-guide-to-java-sockets
